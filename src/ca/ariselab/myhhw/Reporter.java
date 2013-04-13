@@ -1,7 +1,7 @@
 /*
  * Project:     MyRobots.com integration for ARISE Human Hamster Wheel 
  * Authors:     Jeffrey Arcand <jeffrey.arcand@ariselab.ca>
- * File:        ca/ariselab/myhhw/MyHHW.java
+ * File:        ca/ariselab/myhhw/Reporter.java
  * Date:        Sat 2013-04-13
  * Copyright:   Copyright (c) 2013 by Jeffrey Arcand.  All rights reserved.
  * License:     GNU GPL v3
@@ -23,33 +23,22 @@
 
 package ca.ariselab.myhhw;
 
-import java.io.IOException;
-
-public class MyHHW {
+public class Reporter {
 	
-	private static int LOAD_DELAY = 2000;
+	private static int SLEEP_DELAY = 5000;
+	private Report rep;
 	
-	public static void main(String[] args) {
+	public Reporter(Report rep) {
+		this.rep = rep;
 		
-		final Report report = new Report();
-		
-		try {
-			LogTailer lt = new LogTailer(args[0]) {
-				public void processRide(Ride r) {
-					report.addRide(r);
-				}
-			};
+		while (true) {
+			System.out.println(rep);
 			
-		} catch (IOException e) {
-			System.err.println(e);
+			try {
+				Thread.sleep(SLEEP_DELAY);
+			} catch (InterruptedException e) {
+			}
 		}
-		
-		try {
-			Thread.sleep(LOAD_DELAY);
-		} catch (InterruptedException e) {
-		}
-		
-		new Reporter(report);
 	}
 }
 
