@@ -29,6 +29,10 @@ import java.util.Date;
 
 public class Ride {
 	
+	private static int RIDE_INIT_SHUTDOWN_TIME = 10;
+	
+	private static int CALORIE_ADJUST = 3;
+	
 	private static SimpleDateFormat sdf
 	  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
@@ -65,7 +69,7 @@ public class Ride {
 		}
 		
 		// Calculate the duration
-		duration = (int)
+		duration = RIDE_INIT_SHUTDOWN_TIME + (int)
 		  ((rideStopped.getTime() - rideStarted.getTime()) / 1000);
 		
 		// If the ride was completed properly, get additional details
@@ -79,13 +83,14 @@ public class Ride {
 				tesla = "true".equals(parts[18]);
 		
 				// Get the number of calories burnt
-				calories = Float.parseFloat(parts[14]);
+				calories = CALORIE_ADJUST
+				  * Float.parseFloat(parts[14]);
 			}
 		}
 	}
 	
 	/**
-	 * Get a string representation of this Ride.
+	 * @return A string representation of this Ride.
 	 */
 	public String toString() {
 		return "Ride (started: " + sdf.format(rideStarted)

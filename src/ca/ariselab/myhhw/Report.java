@@ -23,63 +23,161 @@
 
 package ca.ariselab.myhhw;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Report {
 	
+	/** The period of time to use in the report. */
+	private static int REPORT_PERIOD_MINS = 60;
+	
+	/** The list of rides done during the period. */
 	private List<Ride> rides = new LinkedList<Ride>();
 	
+	/** The number tesla strikes during the report period. */
+	private int teslaStrikes;
+	
+	/** The number of calories burnt during the report period. */
+	private float totalCalories;
+	
+	/** The usage rate of the HHW during the report period. */
+	private float usageRate;
+	
+	/**
+	 * The rate of successfull completion of rides during the report period.
+	 */
+	private float completionRate;
+	
+	/** Create a new report system. */
 	public Report() {
 	}
 	
+	/**
+	 * Add the provided ride to the report's data.
+	 * @param r The ride to add.
+	 */
 	public void addRide(Ride r) {
 		rides.add(r);
 	}
 	
+	/**
+	 * @return The number of rides in the latest data.
+	 */
 	public int count() {
 		return rides.size();
 	}
 	
-/*	public void filter() {
-		Iterator<Car> carsIterator = cars.iterator();
-		while (carsIterator.hasNext()) {
-			Car c = carsIterator.next();
-			if (c.getCarColor() == Color.BLUE) {
-				carsIterator.remove();
+	/**
+	 * Prune the data to remove rides that aren't included in the report's
+	 * reporting period.
+	 */
+	public void removeOld() {
+		Calendar old = Calendar.getInstance();
+		old.setTime(new Date());
+		old.add(Calendar.MINUTE, -REPORT_PERIOD_MINS);
+		long oldTS = old.getTime().getTime();
+		
+		synchronized (rides) {
+			Iterator<Ride> it = rides.iterator();
+			while (it.hasNext()) {
+				Ride r = it.next();
+				long rideTS = r.getStopped().getTime();
+				if (rideTS < oldTS) {
+					it.remove();
+				}
 			}
 		}
 	}
-*/	
+	
+	/**
+	 * Update the report outputs based on the report's data.
+	 */
+	public void update() {
+
+		synchronized (rides) {
+			teslaStrikes = 0;
+			totalCalories = 0;
+	
+			int totalDurations = 0;
+			int completeRides = 0;
+	
+			Iterator<Ride> it = rides.iterator();
+			while (it.hasNext()) {
+				Ride r = it.next();
+		
+				totalDurations += r.getDuration();
+				teslaStrikes += r.getTesla() ? 1 : 0;
+				totalCalories += r.getCalories();
+				completeRides += r.getCalories() == 0 ? 0 : 1;
+			}
+	
+			usageRate = totalDurations / 3600.0f;
+			completionRate = completeRides / (count() + 0.0001f);
+		}
+	}
+	
+	/**
+	 * @return Generate a header for the text representation of the report.
+	 */
+	public String getHeaders() {
+		return "Last Hour Report:\n"
+		  + "\tRides\tTesla\tCalories\tUsage\tCompletion\n"
+		  + "\t¯¯¯¯¯\t¯¯¯¯¯\t¯¯¯¯¯¯¯¯\t¯¯¯¯¯\t¯¯¯¯¯¯¯¯¯¯\n"
+		  ;
+	}
+	
+	/**
+	 * @return A string representation of this report outputs.
+	 */
 	public String toString() {
-		
-		int totalDurations = 0;
-		int totalTesla = 0;
-		float totalCalories = 0;
-		int incompleteRides = 0;
-		
-		Iterator<Ride> it = rides.iterator();
-		while (it.hasNext()) {
-			Ride r = it.next();
-			
-			totalDurations += r.getDuration();
-			totalTesla += r.getTesla() ? 1 : 0;
-			totalCalories += r.getCalories();
-			incompleteRides += r.getCalories() == 0 ? 1 : 0;
+		synchronized (rides) {
+			return "\t " + count()
+			  + "\t " + teslaStrikes
+			  + "\t  " + (int) totalCalories
+			  + "\t\t " + (int) (usageRate * 1000)
+			  + "\t   " + (int) (completionRate * 1000);
 		}
-		
-		String report = "Report: N/A\n";
-		try {
-			report = "Report:\n"
-			  + "\tAll Ride Count: " + count() + "\n"
-			  + "\tIncomplete Ride Count: " + incompleteRides + " (" + (incompleteRides * 100 / count()) + "%)\n"
-			  + "\tTotal Duration: " + (totalDurations / 60) + " mins (" + (totalDurations / 36 / 8) + "%)\n"
-			  + "\tTesla Count: " + totalTesla + " (" + (totalTesla * 100 / count()) + "%)\n"
-			  + "\tTotal Calories: " + totalCalories + "\n";
-		} catch (ArithmeticException e) {
+	}
+	
+	/** @return The number of rides in the report period. */
+	public int getRides() {
+		synchronized (rides) {
+			return count();
 		}
-		return report;
+	}
+	
+	/** @return The number of tesla strikes in the report period. */
+	public int getTeslaStrikes() {
+		synchronized (rides) {
+			return teslaStrikes;
+		}
+	}
+	
+	/** @return The total calories burnt in the report period. */
+	public int getTotalCalories() {
+		synchronized (rides) {
+			return (int) totalCalories;
+		}
+	}
+	
+	/** @return The usage rate of the HHW during the report period. */
+	public float getUsageRate() {
+		synchronized (rides) {
+			return usageRate;
+		}
+	}
+	
+	/**
+	 * @return The rate of successfull ride completion during the report
+	 *    period.
+	 */
+	public float getCompletionRate() {
+		synchronized (rides) {
+			return completionRate;
+		}
 	}
 }
 

@@ -31,7 +31,11 @@ public class Reporter {
 	public Reporter(Report rep) {
 		this.rep = rep;
 		
+		System.out.print(rep.getHeaders());
+		
 		while (true) {
+			rep.removeOld();
+			rep.update();
 			System.out.println(rep);
 			
 			try {
