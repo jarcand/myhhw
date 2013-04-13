@@ -23,9 +23,17 @@
 
 package ca.ariselab.myhhw;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.HttpURLConnection;
+
 public class Reporter {
 	
-	private static int SLEEP_DELAY = 5000;
+	private static int SLEEP_DELAY = 30000;
 	private Report rep;
 	
 	public Reporter(Report rep) {
@@ -36,12 +44,71 @@ public class Reporter {
 		while (true) {
 			rep.removeOld();
 			rep.update();
-			System.out.println(rep);
+			String url = genURL();
+			
+			System.out.println(rep + "\t\t" + updateMyRobots(url));
 			
 			try {
 				Thread.sleep(SLEEP_DELAY);
 			} catch (InterruptedException e) {
 			}
+		}
+	}
+	
+	private String genURL() {
+		return String.format(
+		  "%s/update?key=%s&field1=%d&field2=%d&field3=%d&"
+		  + "field4=%d&field5=%d&field6=%d&field7=%d&field8=%d",
+		  Config.SERVER,
+		  Config.WRITE_API_KEY,
+		  rep.getRides(),
+		  rep.getTeslaStrikes(),
+		  rep.getTotalCalories(),
+		  (int) (1000 * rep.getUsageRate()),
+		  (int) (1000 * rep.getCompletionRate()),
+		  0,
+		  0,
+		  0);
+	}
+	
+	/**
+	 * Make an HTTP request for the provided URL and get the result.
+	 * @param urlStr The URL to request.
+	 * @return Whether the update was successfull or not.
+	 */
+	private static boolean updateMyRobots(String urlStr) {
+		
+		try {
+			// Make the HTTP request
+			URL url = new URL(urlStr);
+			HttpURLConnection http = (HttpURLConnection) url.openConnection();
+			http.setRequestMethod("GET");
+			http.connect();
+			
+			// Get the response code
+			int code = http.getResponseCode();
+			if (code != 200) {
+				return false;
+			}
+			
+			// Get the response message
+			InputStream in = http.getInputStream();
+			BufferedReader br = new BufferedReader(
+			  new InputStreamReader(in, "UTF-8"));
+			String response = br.readLine();
+			br.close();
+			
+			// Verify success
+			return !"0".equals(response);
+			
+		} catch (MalformedURLException e) {
+			System.err.println(e);
+			return false;
+			
+		} catch (IOException e) {
+			System.err.println(e);
+			e.printStackTrace();
+			return false;
 		}
 	}
 }

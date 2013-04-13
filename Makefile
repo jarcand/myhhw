@@ -10,7 +10,5 @@ build:
 	javac -sourcepath src -d bin src/ca/ariselab/myhhw/*.java
 
 run:
-	DISPLAY=:0 java -cp bin/ ca.ariselab.myhhw.LogTailer logs/output.20120413.log
+	DISPLAY=:0 java -cp bin/ ca.ariselab.myhhw.MyHHW logs/output.20120413.log
 
-#test:
-#	DISPLAY=:0 java -cp bin/ ca.ariselab.myhhw.TestControl
