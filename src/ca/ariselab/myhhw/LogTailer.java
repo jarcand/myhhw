@@ -25,7 +25,7 @@ package ca.ariselab.myhhw;
 
 import java.io.IOException;
 
-public class LogTailer extends Tailer {
+public abstract class LogTailer extends Tailer {
 	
 	private String rideStarted = null;
 	
@@ -61,8 +61,8 @@ public class LogTailer extends Tailer {
 				// Create the ride struct
 				Ride r = new Ride(rideStarted, line);
 				
-				// TODO: Temp: print out the ride
-				System.out.println(r);
+				// Process the ride
+				processRide(r);
 				
 			} catch (IllegalArgumentException e) {
 				
@@ -77,11 +77,21 @@ public class LogTailer extends Tailer {
 	}
 	
 	/**
+	 * Process the provided ride.
+	 * @param r The ride to process.
+	 */
+	public abstract void processRide(Ride r);
+	
+	/**
 	 * Stand-alone test of the class.
 	 */
 	public static void main(String[] args) throws IOException {
 		
-		new LogTailer(args[0]);
+		new LogTailer(args[0]) {
+			public void processRide(Ride r) {
+				System.out.println(r);
+			}
+		};
 		
 		System.out.println("After start tailing.");
 	}
