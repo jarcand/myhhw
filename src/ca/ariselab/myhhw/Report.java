@@ -46,6 +46,12 @@ public class Report {
 	/** The usage rate of the HHW during the report period. */
 	private float usageRate;
 	
+	/** Whether or not the HHW is usually open at the report time. */
+	private boolean open;
+	
+	/** The system's uptime in minutes. */
+	private int uptime;
+	
 	/**
 	 * The rate of successfull completion of rides during the report period.
 	 */
@@ -116,6 +122,8 @@ public class Report {
 	
 			usageRate = totalDurations / 3600.0f;
 			completionRate = completeRides / (count() + 0.0001f);
+			open = Utils.getHHWOpen();
+			uptime = Utils.getSystemUptime();
 		}
 	}
 	
@@ -123,7 +131,7 @@ public class Report {
 	 * @return Generate a header for the text representation of the report.
 	 */
 	public String getHeaders() {
-		return "Rides\tTesla\tCals\tUsage\tCompl";
+		return "Rides\tTesla\tCals\tUsage\tCompl\tOpen\tUptime";
 	}
 	
 	/**
@@ -133,9 +141,11 @@ public class Report {
 		synchronized (rides) {
 			return count()
 			  + "\t" + teslaStrikes
-			  + "\t" + (int) totalCalories
-			  + "\t" + (int) (usageRate * 1000)
-			  + "\t" + (int) (completionRate * 1000);
+			  + "\t" + Math.round(totalCalories)
+			  + "\t" + Math.round((usageRate * 1000))
+			  + "\t" + Math.round((completionRate * 1000))
+			  + "\t" + open
+			  + "\t" + uptime;
 		}
 	}
 	
@@ -156,7 +166,7 @@ public class Report {
 	/** @return The total calories burnt in the report period. */
 	public int getTotalCalories() {
 		synchronized (rides) {
-			return (int) totalCalories;
+			return Math.round(totalCalories);
 		}
 	}
 	
@@ -174,6 +184,20 @@ public class Report {
 	public float getCompletionRate() {
 		synchronized (rides) {
 			return completionRate;
+		}
+	}
+	
+	/** @return Whether or not the HHW is usually open at this time. */
+	public boolean getOpen() {
+		synchronized (rides) {
+			return open;
+		}
+	}
+	
+	/** @return The system uptime in minutes. */
+	public int getUptime() {
+		synchronized (rides) {
+			return uptime;
 		}
 	}
 }

@@ -51,7 +51,8 @@ public class Reporter {
 	public Reporter(Report rep) {
 		this.rep = rep;
 		
-		System.out.println("Timestamp\t\t" + rep.getHeaders() + "\tUpdated");
+		System.out.println("Timestamp\t\t" + rep.getHeaders()
+		  + "\tUpdated");
 		
 		while (true) {
 			rep.removeOld();
@@ -81,10 +82,10 @@ public class Reporter {
 		  rep.getRides(),
 		  rep.getTeslaStrikes(),
 		  rep.getTotalCalories(),
-		  (int) (1000 * rep.getUsageRate()),
-		  (int) (1000 * rep.getCompletionRate()),
-		  0,
-		  0,
+		  Math.round(1000 * rep.getUsageRate()),
+		  Math.round(1000 * rep.getCompletionRate()),
+		  rep.getOpen() ? 1 : 0,
+		  rep.getUptime(),
 		  0);
 	}
 	
@@ -98,7 +99,8 @@ public class Reporter {
 		try {
 			// Make the HTTP request
 			URL url = new URL(urlStr);
-			HttpURLConnection http = (HttpURLConnection) url.openConnection();
+			HttpURLConnection http =
+			  (HttpURLConnection) url.openConnection();
 			http.setRequestMethod("GET");
 			http.connect();
 			
