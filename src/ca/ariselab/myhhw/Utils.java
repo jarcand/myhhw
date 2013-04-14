@@ -48,7 +48,7 @@ public final class Utils {
 		}
 		
 		// Closed on Mondays from Sept to April (inclusive)
-		int dow = now.get(DAY_OF_WEEK);
+		int dow = now.get(Calendar.DAY_OF_WEEK);
 		int month = now.get(Calendar.MONTH);
 		if (dow == Calendar.MONDAY
 		  && (month <= Calendar.APRIL || month >= Calendar.SEPTEMBER)) {
