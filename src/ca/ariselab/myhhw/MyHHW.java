@@ -41,7 +41,7 @@ public class MyHHW {
 			};
 			
 		} catch (IOException e) {
-			System.err.println(e);
+			e.printStackTrace();
 		}
 		
 		try {

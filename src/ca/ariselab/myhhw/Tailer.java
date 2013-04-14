@@ -76,8 +76,7 @@ public abstract class Tailer {
 				try {
 					mainLoop();
 				} catch (IOException e) {
-					System.err.println(
-					  "ERROR reading file: " + e);
+					e.printStackTrace();
 				} finally {
 					try {
 						br.close();

@@ -102,11 +102,10 @@ public class Reporter {
 			return !"0".equals(response);
 			
 		} catch (MalformedURLException e) {
-			System.err.println(e);
+			e.printStackTrace();
 			return false;
 			
 		} catch (IOException e) {
-			System.err.println(e);
 			e.printStackTrace();
 			return false;
 		}

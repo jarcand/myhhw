@@ -47,15 +47,15 @@ public abstract class LogTailer extends Tailer {
 	public boolean processLine(int no, String line) {
 		
 		// Check if a ride is starting
-		if (line.indexOf("M_RIDE - New ride started") > 0) {
+		if (line.contains("M_RIDE - New ride started")) {
 			
 			// Save the line for when the ride ends
 			rideStarted = line;
 			
 		// Check if a ride is ending
-		} else if (line.indexOf("M_RIDE - Ride ended: ") > 0
-		  || line.indexOf(
-		    "M_FSM - Changing from state RUNNING to SAFETY_FAIL") > 0) {
+		} else if (line.contains("M_RIDE - Ride ended: ")
+		  || line.contains(
+		    "M_FSM - Changing from state RUNNING to SAFETY_FAIL")) {
 			
 			try {
 				// Create the ride struct
