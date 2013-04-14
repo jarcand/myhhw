@@ -30,23 +30,36 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.HttpURLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Reporter {
 	
-	private static int SLEEP_DELAY = 30000;
+	/** The delay to wait between updates. */
+	private static final int SLEEP_DELAY = 30000;
+	
+	private static SimpleDateFormat sdf
+	  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	private Report rep;
 	
+	/**
+	 * Create a new Reporter worker that will periodically sends the
+	 * Report's output to MyRobots.
+	 * @param rep The Report to use as the source.
+	 */
 	public Reporter(Report rep) {
 		this.rep = rep;
 		
-		System.out.print(rep.getHeaders());
+		System.out.println("Timestamp\t\t" + rep.getHeaders() + "\tUpdated");
 		
 		while (true) {
 			rep.removeOld();
 			rep.update();
 			String url = genURL();
 			
-			System.out.println(rep + "\t\t" + updateMyRobots(url));
+			System.out.println(sdf.format(new Date()) + "\t"
+			  + rep + "\t" + updateMyRobots(url));
 			
 			try {
 				Thread.sleep(SLEEP_DELAY);
@@ -55,6 +68,10 @@ public class Reporter {
 		}
 	}
 	
+	/**
+	 * Generate the URL to send the data to MyRobots.
+	 * @return The URL to use.
+	 */
 	private String genURL() {
 		return String.format(
 		  "%s/update?key=%s&field1=%d&field2=%d&field3=%d&"

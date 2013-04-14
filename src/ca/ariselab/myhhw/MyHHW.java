@@ -23,18 +23,41 @@
 
 package ca.ariselab.myhhw;
 
+import java.io.File;
 import java.io.IOException;
 
 public class MyHHW {
 	
-	private static int LOAD_DELAY = 2000;
+	private static final int LOAD_DELAY = 2000;
 	
 	public static void main(String[] args) {
 		
+		// Verify the right amount of arguments
+		if (args.length < 1) {
+			System.err.println("Usage:\n"
+			  + "\tjava ca.ariselab.myhhw.MyHHW <log filename>");
+			System.exit(1);
+		}
+		
+		// Parse the command line
+		String filename = args[0];
+		
+		// Verify that the log file exists
+		File f = new File(filename);
+		if (!f.exists()) {
+			System.err.println("ERROR: The specified file ("
+			  + filename + ") does not exist.");
+			System.exit(2);
+		}
+		
+		// Create a report object
 		final Report report = new Report();
 		
 		try {
-			LogTailer lt = new LogTailer(args[0]) {
+			
+			// Start tailing the specified log file and add ride
+			// information to the report object
+			LogTailer lt = new LogTailer(filename) {
 				public void processRide(Ride r) {
 					report.addRide(r);
 				}
@@ -44,11 +67,14 @@ public class MyHHW {
 			e.printStackTrace();
 		}
 		
+		// Wait a bit for the tailer to process the existing part of the
+		// log file
 		try {
 			Thread.sleep(LOAD_DELAY);
 		} catch (InterruptedException e) {
 		}
 		
+		// Create a new reporter worker, that will send data to MyRobots
 		new Reporter(report);
 	}
 }

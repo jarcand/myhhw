@@ -29,11 +29,13 @@ import java.util.Date;
 
 public class Ride {
 	
-	private static int RIDE_INIT_SHUTDOWN_TIME = 10;
+	/** The overhead time needed to start and stop a ride. */
+	private static final int RIDE_INIT_SHUTDOWN_TIME = 10;
 	
-	private static int CALORIE_ADJUST = 3;
+	/** The calorie calculation in the log file is incorrect. */
+	private static final int CALORIE_ADJUST = 3;
 	
-	private static SimpleDateFormat sdf
+	private static final SimpleDateFormat sdf
 	  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	private Date rideStarted;
@@ -49,6 +51,15 @@ public class Ride {
 	 */
 	public Ride(String startedLine, String stoppedLine)
 	  throws IllegalArgumentException {
+		
+		// Verify the arguments are not null
+		if (startedLine == null) {
+			throw new IllegalArgumentException(
+			  "The stopped line cannot be null.");
+		} else if (stoppedLine == null) {
+			throw new IllegalArgumentException(
+			  "The stopped line cannot be null.");
+		}
 		
 		// Parse the started timestamp
 		try {

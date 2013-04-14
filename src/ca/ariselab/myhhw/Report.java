@@ -32,7 +32,7 @@ import java.util.List;
 public class Report {
 	
 	/** The period of time to use in the report. */
-	private static int REPORT_PERIOD_MINS = 60;
+	private static final int REPORT_PERIOD_MINS = 60;
 	
 	/** The list of rides done during the period. */
 	private List<Ride> rides = new LinkedList<Ride>();
@@ -123,10 +123,7 @@ public class Report {
 	 * @return Generate a header for the text representation of the report.
 	 */
 	public String getHeaders() {
-		return "Last Hour Report:\n"
-		  + "\tRides\tTesla\tCalories\tUsage\tCompletion\n"
-		  + "\t¯¯¯¯¯\t¯¯¯¯¯\t¯¯¯¯¯¯¯¯\t¯¯¯¯¯\t¯¯¯¯¯¯¯¯¯¯\n"
-		  ;
+		return "Rides\tTesla\tCals\tUsage\tCompl";
 	}
 	
 	/**
@@ -134,11 +131,11 @@ public class Report {
 	 */
 	public String toString() {
 		synchronized (rides) {
-			return "\t " + count()
-			  + "\t " + teslaStrikes
-			  + "\t  " + (int) totalCalories
-			  + "\t\t " + (int) (usageRate * 1000)
-			  + "\t   " + (int) (completionRate * 1000);
+			return count()
+			  + "\t" + teslaStrikes
+			  + "\t" + (int) totalCalories
+			  + "\t" + (int) (usageRate * 1000)
+			  + "\t" + (int) (completionRate * 1000);
 		}
 	}
 	

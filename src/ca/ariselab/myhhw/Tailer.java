@@ -29,7 +29,8 @@ import java.io.IOException;
 
 public abstract class Tailer {
 	
-	private static int SLEEP_DELAY = 500;
+	private static final int SLEEP_DELAY = 500;
+	
 	private boolean tailing = true;
 	private FileReader fr = null;
 	private BufferedReader br = null;
