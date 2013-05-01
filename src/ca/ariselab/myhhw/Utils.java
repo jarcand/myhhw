@@ -42,7 +42,7 @@ public final class Utils {
 		Calendar now = Calendar.getInstance();
 		
 		// Opens at 09:00 and closes 17:00
-		int hour = now.get(Calendar.HOUR);
+		int hour = now.get(Calendar.HOUR_OF_DAY);
 		if (hour < 9 || hour >= 17) {
 			return false;
 		}
