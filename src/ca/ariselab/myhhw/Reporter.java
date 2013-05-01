@@ -38,6 +38,9 @@ public class Reporter {
 	/** The delay to wait between updates. */
 	private static final int SLEEP_DELAY = 30000;
 	
+	/** The maximum number of times the update can be skipped. */
+	private static final int SKIP_LIMIT = 9;
+	
 	private static SimpleDateFormat sdf
 	  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
@@ -54,13 +57,34 @@ public class Reporter {
 		System.out.println("Timestamp\t\t" + rep.getHeaders()
 		  + "\tUpdated");
 		
+		String ignoreRegex = "field7=[0-9]+&";
+		String lastUrl = "";
+		boolean lastResult = false;
+		int skipCount = 0;
+		
 		while (true) {
 			rep.removeOld();
 			rep.update();
 			String url = genURL();
 			
-			System.out.println(sdf.format(new Date()) + "\t"
-			  + rep + "\t" + updateMyRobots(url));
+			// Don't do an update if no data has changed in a while
+			// the HHW is closed
+			if (lastResult && !rep.getOpen()
+			  && lastUrl.equals(url.replaceFirst(ignoreRegex, ""))
+			  && skipCount < SKIP_LIMIT) {
+				
+				skipCount++;
+				
+			} else {
+				
+				skipCount = 0;
+				lastUrl = url.replaceFirst(ignoreRegex, "");
+				
+				lastResult = updateMyRobots(url);
+				
+				System.out.println(sdf.format(new Date()) + "\t"
+				  + rep + "\t" + lastResult);
+			}
 			
 			try {
 				Thread.sleep(SLEEP_DELAY);
